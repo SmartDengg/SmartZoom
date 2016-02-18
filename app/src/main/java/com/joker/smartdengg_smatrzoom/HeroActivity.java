@@ -12,6 +12,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.view.ViewCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.view.animation.OvershootInterpolator;
@@ -30,13 +31,16 @@ public class HeroActivity extends AppCompatActivity {
 
   private static final String RECT = "RECT";
   private static final String POINT = "POINT";
+  private static final long DURATION = 666;
 
   @NonNull @Bind((R.id.hero_layout_square_iv)) protected ImageView heroIv;
 
+  private Rect startBounds;
+  private float scale;
   private AnimatorSet animatorSet;
 
   public static void navigateToHeroActivity(Activity startingActivity, @NonNull Rect startBounds,
-      @NonNull Point globalOffset) {
+                                            @NonNull Point globalOffset) {
 
     Intent intent = new Intent(startingActivity, HeroActivity.class);
     intent.putExtra(RECT, startBounds).putExtra(POINT, globalOffset);
@@ -69,13 +73,13 @@ public class HeroActivity extends AppCompatActivity {
   private void runEnterAnimation(Bundle extras) {
 
     Point globalOffset = extras.getParcelable(POINT);
-    Rect startBounds = extras.getParcelable(RECT);
+    startBounds = extras.getParcelable(RECT);
 
     Rect finalBounds = new Rect();
     this.heroIv.getGlobalVisibleRect(finalBounds);
     finalBounds.offset(-globalOffset.x, -globalOffset.y);
 
-    float scale = Utils.calculateScale(startBounds, finalBounds);
+    scale = Utils.calculateScale(startBounds, finalBounds);
 
     this.heroIv.setLayerType(View.LAYER_TYPE_HARDWARE, null);
 
@@ -83,21 +87,18 @@ public class HeroActivity extends AppCompatActivity {
     ViewCompat.setPivotY(heroIv, 0.0f);
 
     animatorSet = new AnimatorSet();
-    animatorSet.play(ObjectAnimator.ofFloat(this.heroIv, View.X, startBounds.left, finalBounds.left))
-               .with(ObjectAnimator.ofFloat(this.heroIv, View.Y, startBounds.top, finalBounds.top))
-               .with(ObjectAnimator.ofFloat(this.heroIv, View.SCALE_X, scale, 1.0f))
-               .with(ObjectAnimator.ofFloat(this.heroIv, View.SCALE_Y, scale, 1.0f))
-               .with(ObjectAnimator.ofFloat(this.heroIv, View.ALPHA, 0.4f, 1.0f));
-    animatorSet.setDuration(666);/*:)*/
-    animatorSet.setInterpolator(new OvershootInterpolator(1.4f));
+    animatorSet
+        .play(ObjectAnimator.ofFloat(this.heroIv, View.X, startBounds.left, finalBounds.left))
+        .with(ObjectAnimator.ofFloat(this.heroIv, View.Y, startBounds.top, finalBounds.top))
+        .with(ObjectAnimator.ofFloat(this.heroIv, View.SCALE_X, scale, 1.0f))
+        .with(ObjectAnimator.ofFloat(this.heroIv, View.SCALE_Y, scale, 1.0f))
+        .with(ObjectAnimator.ofFloat(this.heroIv, View.ALPHA, 0.6f, 1.0f));
+    animatorSet.setDuration(DURATION);
+    animatorSet.setInterpolator(new OvershootInterpolator(1.2f));
     animatorSet.addListener(new AnimatorListenerAdapter() {
       @Override public void onAnimationEnd(Animator animation) {
 
         heroIv.setLayerType(View.LAYER_TYPE_NONE, null);
-        HeroActivity.this.animatorSet = null;
-      }
-
-      @Override public void onAnimationCancel(Animator animation) {
         HeroActivity.this.animatorSet = null;
       }
     });
@@ -109,13 +110,46 @@ public class HeroActivity extends AppCompatActivity {
     });
   }
 
+  protected void runExitAnimator() {
+
+    if (animatorSet != null) animatorSet.cancel();
+
+    this.heroIv.setLayerType(View.LAYER_TYPE_HARDWARE, null);
+
+    animatorSet = new AnimatorSet();
+    animatorSet
+        .play(ObjectAnimator.ofFloat(this.heroIv, View.X, startBounds.left))
+        .with(ObjectAnimator.ofFloat(this.heroIv, View.Y, startBounds.top))
+        .with(ObjectAnimator.ofFloat(this.heroIv, View.SCALE_X, scale))
+        .with(ObjectAnimator.ofFloat(this.heroIv, View.SCALE_Y, scale))
+        .with(ObjectAnimator.ofFloat(this.heroIv, View.ALPHA, 0.8f));
+    animatorSet.setDuration(DURATION);
+    animatorSet.setInterpolator(new OvershootInterpolator(1.1f));
+    animatorSet.addListener(new AnimatorListenerAdapter() {
+      @Override public void onAnimationEnd(Animator animation) {
+
+        HeroActivity.this.animatorSet = null;
+        HeroActivity.this.heroIv.setLayerType(View.LAYER_TYPE_NONE, null);
+        HeroActivity.this.finish();
+      }
+    });
+    animatorSet.start();
+  }
+
   @NonNull @OnClick(R.id.hero_layout_cancel_iv) void onCancelClick() {
-    HeroActivity.this.finish();
+    HeroActivity.this.runExitAnimator();
   }
 
   @Override public void finish() {
     super.finish();
     overridePendingTransition(0, 0);
+  }
+
+  @Override public boolean onKeyDown(int keyCode, KeyEvent event) {
+    if (keyCode == KeyEvent.KEYCODE_BACK && event.getRepeatCount() == 0) {
+      HeroActivity.this.runExitAnimator();
+    }
+    return false;
   }
 
   @Override protected void onDestroy() {

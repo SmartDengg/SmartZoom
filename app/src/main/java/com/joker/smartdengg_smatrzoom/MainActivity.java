@@ -18,13 +18,13 @@ import butterknife.Bind;
 import butterknife.BindString;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import com.joker.smartdengg_smatrzoom.util.FastBlurUtil;
+import com.joker.smartdengg_smatrzoom.util.BestBlur;
 import com.squareup.picasso.Picasso;
 
 public class MainActivity extends AppCompatActivity {
 
   protected static final int BLUR_RADIUS = 10;
-  protected static final float BLUR_SCALE = 1.0f;
+  protected static final float BLUR_SCALE = 0.0f;
 
   @BindString(R.string.app_name) protected String Title;
 
@@ -36,7 +36,6 @@ public class MainActivity extends AppCompatActivity {
   private Canvas canvas = null;
   private Paint paint = null;
   private Bitmap screenBitmap;
-
   private Point globalOffset = null;
 
   private View inflate;
@@ -50,9 +49,12 @@ public class MainActivity extends AppCompatActivity {
 
   private void navigateToHero(View inflated) {
 
-    //Bitmap bitmap = new BestBlur(MainActivity.this).blurBitmap(catchScreen(), BLUR_RADIUS, BLUR_SCALE);
-    Bitmap bitmap = FastBlurUtil.blur(catchScreen(), BLUR_SCALE, BLUR_RADIUS);
-    ((ImageView) inflated).setImageBitmap(bitmap);
+    this.profileIv.setVisibility(View.GONE);
+
+    BestBlur bestBlur = new BestBlur(MainActivity.this);
+    Bitmap blurBitmap = bestBlur.blurBitmap(catchScreen(), BLUR_RADIUS, BLUR_SCALE);
+    ((ImageView) inflated).setImageBitmap(blurBitmap);
+    bestBlur.destroy();
 
     Rect startBounds = new Rect();
     profileIv.getGlobalVisibleRect(startBounds);
@@ -104,7 +106,7 @@ public class MainActivity extends AppCompatActivity {
     Bitmap drawingCache = rootView.getDrawingCache();
 
     if (screenBitmap == null || canvas == null || paint == null) {
-      screenBitmap = Bitmap.createBitmap(drawingCache.getWidth(), drawingCache.getHeight(), Bitmap.Config.RGB_565);
+      screenBitmap = Bitmap.createBitmap(drawingCache.getWidth(), drawingCache.getHeight(), Bitmap.Config.ARGB_8888);
       canvas = new Canvas(screenBitmap);
       paint = new Paint();
       paint.setAntiAlias(true);
@@ -120,7 +122,9 @@ public class MainActivity extends AppCompatActivity {
 
   @Override protected void onPostResume() {
     super.onPostResume();
-    viewStub.setVisibility(View.GONE);
+
+    this.profileIv.setVisibility(View.VISIBLE);
+    this.viewStub.setVisibility(View.GONE);
   }
 
   @Override protected void onDestroy() {

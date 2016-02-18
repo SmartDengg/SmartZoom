@@ -23,12 +23,10 @@ android {
 }
 
 dependencies {
-  compile fileTree(dir: 'libs', include: ['*.jar'])
   /*Google*/
   compile 'com.android.support:design:23.1.1'
   /*Square*/
   compile 'com.squareup.picasso:picasso:2.5.2'
   compile 'com.squareup.okhttp:okhttp:2.7.4'
   compile 'com.jakewharton:butterknife:7.0.1'
-  compile files('libs/renderscript-v8.jar')
 }

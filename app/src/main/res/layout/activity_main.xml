@@ -13,16 +13,20 @@
       android:id="@+id/main_layout_toolbar"
       android:layout_width="match_parent"
       android:layout_height="?attr/actionBarSize"
-      android:background="@color/colorPrimary"
+      android:theme="@style/ToolbarTheme"
+      app:contentInsetLeft="0dp"
+      app:contentInsetStart="0dp"
+      app:titleTextAppearance="@style/Toolbar.TitleText"
       app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
-      />
+  />
 
-  <com.joker.smartdengg_smatrzoom.SquareImageView
+  <ImageView
       android:layout_width="match_parent"
       android:layout_height="match_parent"
-      android:layout_alignParentBottom="true"
+      android:layout_marginTop="?attr/actionBarSize"
+      android:scaleType="centerCrop"
       android:src="@drawable/forest"
-      />
+  />
 
   <ImageView
       android:id="@+id/main_layout_profile_iv"
@@ -32,8 +36,8 @@
       android:layout_marginTop="24dp"
       android:scaleType="centerCrop"
       android:layout_centerHorizontal="true"
-      android:background="@android:color/white"
-      />
+      android:background="@android:color/transparent"
+  />
 
   <ViewStub
       android:id="@+id/main_layout_viewstub"
@@ -41,6 +45,21 @@
       android:layout_height="match_parent"
       android:layout="@layout/main_layout_stub_layout"
       android:inflatedId="@+id/main_layout_blur_iv"
-      />
+  />
+
+  <com.joker.smartdengg_smatrzoom.view.SmartTextView
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginBottom="8dp"
+      android:layout_marginRight="8dp"
+      android:layout_alignParentBottom="true"
+      android:layout_alignParentRight="true"
+      android:textSize="24sp"
+      android:shadowDy="10"
+      android:shadowRadius="4"
+      android:shadowColor="@android:color/holo_orange_light"
+      android:textColor="@android:color/holo_blue_bright"
+      android:text="@string/smartDengg"
+  />
 
 </RelativeLayout>
