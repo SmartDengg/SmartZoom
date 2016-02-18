@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/transparent"
+    >
+
+  <ImageView
+      android:id="@+id/hero_layout_cancel_iv"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="24dp"
+      android:layout_marginLeft="24dp"
+      android:scaleType="centerCrop"
+      android:src="@drawable/icon_cancel"
+      />
+
+  <com.joker.smartdengg_smatrzoom.SquareImageView
+      android:id="@+id/hero_layout_square_iv"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:layout_centerInParent="true"
+      android:scaleType="centerCrop"
+      />
+
+</RelativeLayout>
