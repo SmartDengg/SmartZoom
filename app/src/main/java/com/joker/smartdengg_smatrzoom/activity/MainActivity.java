@@ -1,4 +1,4 @@
-package com.joker.smartdengg_smatrzoom;
+package com.joker.smartdengg_smatrzoom.activity;
 
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -14,11 +14,16 @@ import android.view.View;
 import android.view.ViewStub;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
 import butterknife.Bind;
 import butterknife.BindString;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import com.joker.smartdengg_smatrzoom.Constant;
+import com.joker.smartdengg_smatrzoom.R;
+import com.joker.smartdengg_smatrzoom.transformation.CropCircleTransformation;
 import com.joker.smartdengg_smatrzoom.util.BestBlur;
+import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
 public class MainActivity extends AppCompatActivity {
@@ -39,6 +44,14 @@ public class MainActivity extends AppCompatActivity {
   private Point globalOffset = null;
 
   private View inflate;
+
+  private boolean isDone;
+
+  private Callback.EmptyCallback picassoCallback = new Callback.EmptyCallback() {
+    @Override public void onSuccess() {
+      MainActivity.this.isDone = true;
+    }
+  };
 
   private ViewStub.OnInflateListener inflateListener = new ViewStub.OnInflateListener() {
     @Override public void onInflate(ViewStub stub, View inflated) {
@@ -79,7 +92,13 @@ public class MainActivity extends AppCompatActivity {
 
     MainActivity.this.setupToolbar();
 
-    Picasso.with(MainActivity.this).load(R.drawable.template).transform(new CropCircleTransformation()).into(profileIv);
+    Picasso
+        .with(MainActivity.this)
+        .load(Constant.URL)
+        .placeholder(R.drawable.ic_holder)
+        .noFade()
+        .transform(new CropCircleTransformation())
+        .into(profileIv, picassoCallback);
 
     this.viewStub.setOnInflateListener(inflateListener);
   }
@@ -89,12 +108,15 @@ public class MainActivity extends AppCompatActivity {
   }
 
   @NonNull @OnClick(R.id.main_layout_profile_iv) void onProfileClick() {
-
-    if (viewStub.getParent() != null) {
-      inflate = viewStub.inflate();
+    if (!isDone) {
+      Toast.makeText(MainActivity.this, "头像加载中......", Toast.LENGTH_SHORT).show();
     } else {
-      viewStub.setVisibility(View.VISIBLE);
-      MainActivity.this.navigateToHero(inflate);
+      if (viewStub.getParent() != null) {
+        inflate = viewStub.inflate();
+      } else {
+        viewStub.setVisibility(View.VISIBLE);
+        MainActivity.this.navigateToHero(inflate);
+      }
     }
   }
 
@@ -129,6 +151,7 @@ public class MainActivity extends AppCompatActivity {
 
   @Override protected void onDestroy() {
     super.onDestroy();
+    Picasso.with(MainActivity.this).cancelRequest(profileIv);
     this.viewStub.setOnInflateListener(null);
     ButterKnife.unbind(MainActivity.this);
   }

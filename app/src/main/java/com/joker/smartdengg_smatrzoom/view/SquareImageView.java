@@ -1,4 +1,4 @@
-package com.joker.smartdengg_smatrzoom;
+package com.joker.smartdengg_smatrzoom.view;
 
 import android.annotation.TargetApi;
 import android.content.Context;

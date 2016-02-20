@@ -1,4 +1,4 @@
-package com.joker.smartdengg_smatrzoom;
+package com.joker.smartdengg_smatrzoom.transformation;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapShader;

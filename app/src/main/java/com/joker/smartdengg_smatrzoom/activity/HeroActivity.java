@@ -1,4 +1,4 @@
-package com.joker.smartdengg_smatrzoom;
+package com.joker.smartdengg_smatrzoom.activity;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
@@ -15,11 +15,14 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewTreeObserver;
-import android.view.animation.OvershootInterpolator;
+import android.view.animation.AccelerateDecelerateInterpolator;
+import android.view.animation.DecelerateInterpolator;
 import android.widget.ImageView;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import com.joker.smartdengg_smatrzoom.Constant;
+import com.joker.smartdengg_smatrzoom.R;
 import com.joker.smartdengg_smatrzoom.util.Utils;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
@@ -39,7 +42,7 @@ public class HeroActivity extends AppCompatActivity {
   private float scale;
   private AnimatorSet animatorSet;
 
-  public static void navigateToHeroActivity(Activity startingActivity, @NonNull Rect startBounds,
+  public static void navigateToHeroActivity(@NonNull Activity startingActivity, @NonNull Rect startBounds,
                                             @NonNull Point globalOffset) {
 
     Intent intent = new Intent(startingActivity, HeroActivity.class);
@@ -91,10 +94,9 @@ public class HeroActivity extends AppCompatActivity {
         .play(ObjectAnimator.ofFloat(this.heroIv, View.X, startBounds.left, finalBounds.left))
         .with(ObjectAnimator.ofFloat(this.heroIv, View.Y, startBounds.top, finalBounds.top))
         .with(ObjectAnimator.ofFloat(this.heroIv, View.SCALE_X, scale, 1.0f))
-        .with(ObjectAnimator.ofFloat(this.heroIv, View.SCALE_Y, scale, 1.0f))
-        .with(ObjectAnimator.ofFloat(this.heroIv, View.ALPHA, 0.6f, 1.0f));
+        .with(ObjectAnimator.ofFloat(this.heroIv, View.SCALE_Y, scale, 1.0f));
     animatorSet.setDuration(DURATION);
-    animatorSet.setInterpolator(new OvershootInterpolator(1.2f));
+    animatorSet.setInterpolator(new AccelerateDecelerateInterpolator());
     animatorSet.addListener(new AnimatorListenerAdapter() {
       @Override public void onAnimationEnd(Animator animation) {
 
@@ -103,7 +105,7 @@ public class HeroActivity extends AppCompatActivity {
       }
     });
 
-    Picasso.with(HeroActivity.this).load(R.drawable.template).into(heroIv, new Callback.EmptyCallback() {
+    Picasso.with(HeroActivity.this).load(Constant.URL).noFade().into(heroIv, new Callback.EmptyCallback() {
       @Override public void onSuccess() {
         animatorSet.start();
       }
@@ -121,10 +123,9 @@ public class HeroActivity extends AppCompatActivity {
         .play(ObjectAnimator.ofFloat(this.heroIv, View.X, startBounds.left))
         .with(ObjectAnimator.ofFloat(this.heroIv, View.Y, startBounds.top))
         .with(ObjectAnimator.ofFloat(this.heroIv, View.SCALE_X, scale))
-        .with(ObjectAnimator.ofFloat(this.heroIv, View.SCALE_Y, scale))
-        .with(ObjectAnimator.ofFloat(this.heroIv, View.ALPHA, 0.8f));
+        .with(ObjectAnimator.ofFloat(this.heroIv, View.SCALE_Y, scale));
     animatorSet.setDuration(DURATION);
-    animatorSet.setInterpolator(new OvershootInterpolator(1.1f));
+    animatorSet.setInterpolator(new DecelerateInterpolator());
     animatorSet.addListener(new AnimatorListenerAdapter() {
       @Override public void onAnimationEnd(Animator animation) {
 
@@ -155,8 +156,8 @@ public class HeroActivity extends AppCompatActivity {
   @Override protected void onDestroy() {
     super.onDestroy();
 
+    Picasso.with(HeroActivity.this).cancelRequest(heroIv);
     if (animatorSet != null && animatorSet.isRunning()) animatorSet.cancel();
-
     ButterKnife.unbind(HeroActivity.this);
   }
 }
