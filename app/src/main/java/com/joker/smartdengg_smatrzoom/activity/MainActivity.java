@@ -14,22 +14,20 @@ import android.view.View;
 import android.view.ViewStub;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
-import android.widget.Toast;
 import butterknife.Bind;
 import butterknife.BindString;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import com.joker.smartdengg_smatrzoom.Constant;
 import com.joker.smartdengg_smatrzoom.R;
 import com.joker.smartdengg_smatrzoom.transformation.CropCircleTransformation;
 import com.joker.smartdengg_smatrzoom.util.BestBlur;
-import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
 public class MainActivity extends AppCompatActivity {
 
-  protected static final int BLUR_RADIUS = 10;
-  protected static final float BLUR_SCALE = 0.0f;
+  protected static final int BLUR_RADIUS = 6;
+  protected static final float BLUR_DESATURATE = 0.0f;
+  protected static final int BLUR_SCALE = BLUR_RADIUS / 2;
 
   @BindString(R.string.app_name) protected String Title;
 
@@ -42,20 +40,10 @@ public class MainActivity extends AppCompatActivity {
   private Paint paint = null;
   private Bitmap screenBitmap;
   private Point globalOffset = null;
-
   private View inflate;
-
-  private boolean isDone;
-
-  private Callback.EmptyCallback picassoCallback = new Callback.EmptyCallback() {
-    @Override public void onSuccess() {
-      MainActivity.this.isDone = true;
-    }
-  };
 
   private ViewStub.OnInflateListener inflateListener = new ViewStub.OnInflateListener() {
     @Override public void onInflate(ViewStub stub, View inflated) {
-
       if (profileIv != null) MainActivity.this.navigateToHero(inflated);
     }
   };
@@ -65,8 +53,14 @@ public class MainActivity extends AppCompatActivity {
     this.profileIv.setVisibility(View.GONE);
 
     BestBlur bestBlur = new BestBlur(MainActivity.this);
-    Bitmap blurBitmap = bestBlur.blurBitmap(catchScreen(), BLUR_RADIUS, BLUR_SCALE);
+
+    Bitmap screenSnapshot = MainActivity.this.catchScreen();
+    Bitmap scaledBitmap = Bitmap.createScaledBitmap(screenSnapshot, screenSnapshot.getWidth() / BLUR_SCALE,
+                                                    screenSnapshot.getHeight() / BLUR_SCALE, true);
+    Bitmap blurBitmap = bestBlur.blurBitmap(scaledBitmap, BLUR_RADIUS, BLUR_DESATURATE);
     ((ImageView) inflated).setImageBitmap(blurBitmap);
+
+    if (screenSnapshot != scaledBitmap) scaledBitmap.recycle();
     bestBlur.destroy();
 
     Rect startBounds = new Rect();
@@ -94,11 +88,10 @@ public class MainActivity extends AppCompatActivity {
 
     Picasso
         .with(MainActivity.this)
-        .load(Constant.URL)
-        .placeholder(R.drawable.ic_holder)
+        .load(R.drawable.one)
         .noFade()
         .transform(new CropCircleTransformation())
-        .into(profileIv, picassoCallback);
+        .into(profileIv);
 
     this.viewStub.setOnInflateListener(inflateListener);
   }
@@ -108,15 +101,11 @@ public class MainActivity extends AppCompatActivity {
   }
 
   @NonNull @OnClick(R.id.main_layout_profile_iv) void onProfileClick() {
-    if (!isDone) {
-      Toast.makeText(MainActivity.this, "头像加载中......", Toast.LENGTH_SHORT).show();
+    if (viewStub.getParent() != null) {
+      inflate = viewStub.inflate();
     } else {
-      if (viewStub.getParent() != null) {
-        inflate = viewStub.inflate();
-      } else {
-        viewStub.setVisibility(View.VISIBLE);
-        MainActivity.this.navigateToHero(inflate);
-      }
+      viewStub.setVisibility(View.VISIBLE);
+      MainActivity.this.navigateToHero(inflate);
     }
   }
 

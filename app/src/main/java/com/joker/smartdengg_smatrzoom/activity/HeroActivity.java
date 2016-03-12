@@ -21,7 +21,6 @@ import android.widget.ImageView;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import com.joker.smartdengg_smatrzoom.Constant;
 import com.joker.smartdengg_smatrzoom.R;
 import com.joker.smartdengg_smatrzoom.util.Utils;
 import com.squareup.picasso.Callback;
@@ -105,11 +104,17 @@ public class HeroActivity extends AppCompatActivity {
       }
     });
 
-    Picasso.with(HeroActivity.this).load(Constant.URL).noFade().into(heroIv, new Callback.EmptyCallback() {
-      @Override public void onSuccess() {
-        animatorSet.start();
-      }
-    });
+    Picasso
+        .with(HeroActivity.this)
+        .load(R.drawable.one)
+        .fit()
+        .centerInside()
+        .noFade()
+        .into(heroIv, new Callback.EmptyCallback() {
+          @Override public void onSuccess() {
+            animatorSet.start();
+          }
+        });
   }
 
   protected void runExitAnimator() {

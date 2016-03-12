@@ -20,7 +20,7 @@
 
   <style name="ToolbarTheme" parent="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
     <!-- This would set the toolbar's background color -->
-    <item name="android:background">@color/material_cyan_400</item>
+    <item name="android:background">@color/colorPrimary</item>
     <!-- android:textColorPrimary is the color of the title text in the Toolbar  -->
     <item name="android:textColorPrimary">@android:color/white</item>
     <!-- android:actionMenuTextColor is the color of the text of action (menu) items  -->
