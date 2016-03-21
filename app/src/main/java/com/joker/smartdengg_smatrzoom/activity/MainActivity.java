@@ -63,6 +63,7 @@ public class MainActivity extends AppCompatActivity {
 
     BestBlur bestBlur = new BestBlur(MainActivity.this);
     Bitmap screen = MainActivity.this.catchScreen();
+
     Bitmap screenBitmap =
         Bitmap.createScaledBitmap(screen, screen.getWidth() / BLUR_SCALE, screen.getHeight() / BLUR_SCALE, true);
     if (screenBitmap != null) screen.recycle();
@@ -96,7 +97,6 @@ public class MainActivity extends AppCompatActivity {
 
     Picasso.with(MainActivity.this)
            .load(R.drawable.one)
-           .placeholder(R.drawable.ic_holder)
            .noFade()
            .transform(new CropCircleTransformation())
            .into(profileIv, picassoCallback);
