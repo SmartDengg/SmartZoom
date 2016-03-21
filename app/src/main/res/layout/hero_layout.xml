@@ -14,7 +14,7 @@
       android:layout_marginLeft="24dp"
       android:scaleType="centerCrop"
       android:tint="@android:color/white"
-      android:src="@drawable/icon_cancel"
+      android:src="@drawable/cancel"
       />
 
   <com.joker.smartdengg_smatrzoom.view.SquareImageView
