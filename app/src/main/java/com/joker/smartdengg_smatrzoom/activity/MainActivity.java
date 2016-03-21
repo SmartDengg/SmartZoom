@@ -19,7 +19,6 @@ import butterknife.Bind;
 import butterknife.BindString;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import com.joker.smartdengg_smatrzoom.Constant;
 import com.joker.smartdengg_smatrzoom.R;
 import com.joker.smartdengg_smatrzoom.transformation.CropCircleTransformation;
 import com.joker.smartdengg_smatrzoom.util.BestBlur;
@@ -29,7 +28,8 @@ import com.squareup.picasso.Picasso;
 public class MainActivity extends AppCompatActivity {
 
   protected static final int BLUR_RADIUS = 10;
-  protected static final float BLUR_SCALE = 0.0f;
+  protected static final float BLUR_DESATURATE = 0.0f;
+  protected static final int BLUR_SCALE = BLUR_RADIUS / 3;
 
   @BindString(R.string.app_name) protected String Title;
 
@@ -38,9 +38,6 @@ public class MainActivity extends AppCompatActivity {
   @NonNull @Bind(R.id.main_layout_profile_iv) protected ImageView profileIv;
   @NonNull @Bind(R.id.main_layout_viewstub) protected ViewStub viewStub;
 
-  private Canvas canvas = null;
-  private Paint paint = null;
-  private Bitmap screenBitmap;
   private Point globalOffset = null;
 
   private View inflate;
@@ -65,7 +62,12 @@ public class MainActivity extends AppCompatActivity {
     this.profileIv.setVisibility(View.GONE);
 
     BestBlur bestBlur = new BestBlur(MainActivity.this);
-    Bitmap blurBitmap = bestBlur.blurBitmap(catchScreen(), BLUR_RADIUS, BLUR_SCALE);
+    Bitmap screen = MainActivity.this.catchScreen();
+    Bitmap screenBitmap =
+        Bitmap.createScaledBitmap(screen, screen.getWidth() / BLUR_SCALE, screen.getHeight() / BLUR_SCALE, true);
+    if (screenBitmap != null) screen.recycle();
+
+    Bitmap blurBitmap = bestBlur.blurBitmap(screenBitmap, BLUR_RADIUS, BLUR_DESATURATE);
     ((ImageView) inflated).setImageBitmap(blurBitmap);
     bestBlur.destroy();
 
@@ -92,13 +94,12 @@ public class MainActivity extends AppCompatActivity {
 
     MainActivity.this.setupToolbar();
 
-    Picasso
-        .with(MainActivity.this)
-        .load(Constant.URL)
-        .placeholder(R.drawable.ic_holder)
-        .noFade()
-        .transform(new CropCircleTransformation())
-        .into(profileIv, picassoCallback);
+    Picasso.with(MainActivity.this)
+           .load(R.drawable.one)
+           .placeholder(R.drawable.ic_holder)
+           .noFade()
+           .transform(new CropCircleTransformation())
+           .into(profileIv, picassoCallback);
 
     this.viewStub.setOnInflateListener(inflateListener);
   }
@@ -127,19 +128,18 @@ public class MainActivity extends AppCompatActivity {
     rootView.setDrawingCacheEnabled(true);
     Bitmap drawingCache = rootView.getDrawingCache();
 
-    if (screenBitmap == null || canvas == null || paint == null) {
-      screenBitmap = Bitmap.createBitmap(drawingCache.getWidth(), drawingCache.getHeight(), Bitmap.Config.ARGB_8888);
-      canvas = new Canvas(screenBitmap);
-      paint = new Paint();
-      paint.setAntiAlias(true);
-      paint.setFlags(Paint.FILTER_BITMAP_FLAG);
-    }
+    Bitmap tempBitmap = Bitmap.createBitmap(drawingCache.getWidth(), drawingCache.getHeight(), Bitmap.Config.ARGB_8888);
+
+    Canvas canvas = new Canvas(tempBitmap);
+    Paint paint = new Paint();
+    paint.setAntiAlias(true);
+    paint.setFlags(Paint.FILTER_BITMAP_FLAG);
 
     canvas.drawBitmap(drawingCache, 0, 0, paint);
 
     rootView.destroyDrawingCache();
 
-    return screenBitmap;
+    return tempBitmap;
   }
 
   @Override protected void onPostResume() {
