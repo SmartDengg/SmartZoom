@@ -1,5 +1,6 @@
 #SmartZoom
 
+
 **Sketch**
 -----------------
 
@@ -8,7 +9,7 @@
 **ScreenShot**
 -----------------
 
-![](http://i13.tietuku.com/4a0ed2f2f68e3069.gif)
+![](./images/smartzoom.gif)
 
 **Developed By**
 -----------------
@@ -21,10 +22,6 @@
 
 <a href="http://weibo.com/5367097592/profile?rightmod=1&wvr=6&mod=personinfo">
   <img alt="Follow me on Weibo" src="http://upload-images.jianshu.io/upload_images/268450-50e41e15ac29b776.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" />
-</a>
-
-<a href="http://chuantu.biz/t2/18/1446906570x1822611354.png">
-  <img alt="Follow me on Wechat" src="http://upload-images.jianshu.io/upload_images/268450-1025666a7a10ec97.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" />
 </a>
 
 
