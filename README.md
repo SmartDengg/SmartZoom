@@ -1,5 +1,5 @@
 #SmartZoom
-
+![](./images/launcher.png)
 
 **Sketch**
 -----------------
